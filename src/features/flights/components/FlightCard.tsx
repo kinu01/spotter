@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Flight } from '@/shared/types/api.types'
 import { formatPrice, getStopsLabel } from '@/shared/utils/format'
+import { ChevronDownIcon } from '@/shared/components/Icons'
 
 interface FlightCardProps {
   flight: Flight
@@ -78,21 +79,25 @@ export function FlightCard({ flight }: FlightCardProps) {
               {formatPrice(flight.price, flight.currency)}
             </p>
             <p className="text-sm text-gray-500">
-              {flight.seatsAvailable} seats left
+              {flight.seatsAvailable} {flight.seatsAvailable === 1 ? 'seat' : 'seats'} left
             </p>
           </div>
 
           {/* Expand Indicator */}
           <div className="hidden sm:block">
-            <svg
-              className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+            <ChevronDownIcon
+              className={`text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+            />
           </div>
+        </div>
+
+        {/* Mobile expand hint */}
+        <div className="sm:hidden flex items-center justify-center gap-1 mt-2 text-xs text-sky-600">
+          <span>{isExpanded ? 'Hide details' : 'Tap for details'}</span>
+          <ChevronDownIcon
+            size="sm"
+            className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+          />
         </div>
       </button>
 

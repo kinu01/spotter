@@ -1,7 +1,12 @@
+export type SortOption = 'price' | 'duration' | 'departure' | 'arrival'
+export type QuickFilter = 'all' | 'cheapest' | 'fastest' | 'best'
+
 export interface FilterState {
   stops: number[] // Empty means all, [0] = nonstop only, [1] = 1 stop, etc.
   priceRange: [number, number] | null // [min, max]
   airlines: string[] // Empty means all, array of airline codes
+  sortBy: SortOption
+  quickFilter: QuickFilter
 }
 
 export interface FilterOptions {
@@ -14,4 +19,6 @@ export const DEFAULT_FILTERS: FilterState = {
   stops: [],
   priceRange: null,
   airlines: [],
+  sortBy: 'price',
+  quickFilter: 'all',
 }

@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { SearchForm, useFlightSearch } from '@/features/search'
+import { SearchForm, useFlightSearch, SearchHistory, useSearchHistory } from '@/features/search'
+import type { FlightSearchParams } from '@/shared/types/api.types'
 import { FlightList, FlightSummary } from '@/features/flights'
-import { FilterPanel, FilterDrawer, useFlightFilters } from '@/features/filters'
-import { PriceChart } from '@/features/charts'
+import { FilterPanel, FilterDrawer, QuickFilterTabs, useFlightFilters } from '@/features/filters'
+import { PriceChart, PriceDistributionChart } from '@/features/charts'
 import { useIsMobile } from '@/shared/hooks/useBreakpoint'
 import { Button } from '@/shared/components/Button'
+import { PlaneIcon, FilterIcon } from '@/shared/components/Icons'
 
 export function SearchPage() {
   const { flights, carriers, isLoading, error, hasSearched, search } = useFlightSearch()
@@ -16,11 +18,18 @@ export function SearchPage() {
     resetFilters,
     hasActiveFilters,
   } = useFlightFilters(flights, carriers)
+  const { history, addSearch, removeItem, clearHistory } = useSearchHistory()
 
   const isMobile = useIsMobile()
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false)
 
   const showFilters = hasSearched && flights.length > 0
+
+  // Wrap search to save to history
+  function handleSearch(params: FlightSearchParams) {
+    addSearch(params)
+    search(params)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -28,19 +37,7 @@ export function SearchPage() {
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-2">
-            <svg
-              className="w-8 h-8 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-              />
-            </svg>
+            <PlaneIcon size="lg" className="text-blue-600" />
             <h1 className="text-2xl font-semibold text-gray-900">Spotter</h1>
           </div>
         </div>
@@ -49,7 +46,15 @@ export function SearchPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Search Form */}
         <section className="mb-6 sm:mb-8">
-          <SearchForm onSearch={search} isLoading={isLoading} />
+          <SearchForm onSearch={handleSearch} isLoading={isLoading} />
+          {!hasSearched && !isLoading && (
+            <SearchHistory
+              history={history}
+              onSelect={handleSearch}
+              onRemove={removeItem}
+              onClear={clearHistory}
+            />
+          )}
         </section>
 
         {/* Results Section */}
@@ -84,19 +89,7 @@ export function SearchPage() {
                     size="sm"
                     onClick={() => setIsFilterDrawerOpen(true)}
                   >
-                    <svg
-                      className="w-4 h-4 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                      />
-                    </svg>
+                    <FilterIcon size="sm" className="mr-2" />
                     Filters
                     {hasActiveFilters && (
                       <span className="ml-2 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -115,9 +108,23 @@ export function SearchPage() {
                 />
               )}
 
-              {/* Price Chart */}
+              {/* Charts */}
               {!isLoading && filteredFlights.length > 0 && (
-                <PriceChart flights={filteredFlights} />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                  <PriceChart flights={filteredFlights} />
+                  <PriceDistributionChart flights={filteredFlights} />
+                </div>
+              )}
+
+              {/* Quick Filter Tabs */}
+              {showFilters && (
+                <div className="mb-4">
+                  <QuickFilterTabs
+                    value={filters.quickFilter}
+                    onChange={(quickFilter) => updateFilter('quickFilter', quickFilter)}
+                    flights={flights}
+                  />
+                </div>
               )}
 
               {/* Flight List */}
@@ -135,19 +142,7 @@ export function SearchPage() {
         {/* Empty State when not searched */}
         {!hasSearched && !isLoading && (
           <div className="mt-12 text-center">
-            <svg
-              className="mx-auto h-24 w-24 text-gray-300"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1}
-                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-              />
-            </svg>
+            <PlaneIcon size="xl" className="mx-auto h-24 w-24 text-gray-300" />
             <h2 className="mt-4 text-xl font-medium text-gray-900">
               Find your next flight
             </h2>

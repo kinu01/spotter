@@ -1,8 +1,8 @@
 import type { Flight } from '@/shared/types/api.types'
-import type { FilterState, FilterOptions } from '../filter.types'
+import type { FilterState, FilterOptions, SortOption, QuickFilter } from '../filter.types'
 
 export function filterFlights(flights: Flight[], filters: FilterState): Flight[] {
-  return flights.filter((flight) => {
+  let result = flights.filter((flight) => {
     // Filter by stops
     if (filters.stops.length > 0 && !filters.stops.includes(flight.stops)) {
       return false
@@ -23,6 +23,81 @@ export function filterFlights(flights: Flight[], filters: FilterState): Flight[]
 
     return true
   })
+
+  // Apply quick filter
+  result = applyQuickFilter(result, filters.quickFilter)
+
+  // Apply sorting
+  result = sortFlights(result, filters.sortBy)
+
+  return result
+}
+
+function applyQuickFilter(flights: Flight[], quickFilter: QuickFilter): Flight[] {
+  if (quickFilter === 'all' || flights.length === 0) {
+    return flights
+  }
+
+  if (quickFilter === 'cheapest') {
+    // Return flights within 10% of the cheapest price
+    const minPrice = Math.min(...flights.map((f) => f.price))
+    const threshold = minPrice * 1.1
+    return flights.filter((f) => f.price <= threshold)
+  }
+
+  if (quickFilter === 'fastest') {
+    // Return flights within 30 minutes of the fastest
+    const minDuration = Math.min(...flights.map((f) => f.durationMinutes))
+    const threshold = minDuration + 30
+    return flights.filter((f) => f.durationMinutes <= threshold)
+  }
+
+  if (quickFilter === 'best') {
+    // Best = balance of price and duration (score-based)
+    const minPrice = Math.min(...flights.map((f) => f.price))
+    const maxPrice = Math.max(...flights.map((f) => f.price))
+    const minDuration = Math.min(...flights.map((f) => f.durationMinutes))
+    const maxDuration = Math.max(...flights.map((f) => f.durationMinutes))
+
+    const priceRange = maxPrice - minPrice || 1
+    const durationRange = maxDuration - minDuration || 1
+
+    const scored = flights.map((f) => ({
+      flight: f,
+      score:
+        ((f.price - minPrice) / priceRange) * 0.6 +
+        ((f.durationMinutes - minDuration) / durationRange) * 0.4,
+    }))
+
+    scored.sort((a, b) => a.score - b.score)
+
+    // Return top 30% or at least 5 flights
+    const count = Math.max(5, Math.ceil(flights.length * 0.3))
+    return scored.slice(0, count).map((s) => s.flight)
+  }
+
+  return flights
+}
+
+function sortFlights(flights: Flight[], sortBy: SortOption): Flight[] {
+  const sorted = [...flights]
+
+  switch (sortBy) {
+    case 'price':
+      sorted.sort((a, b) => a.price - b.price)
+      break
+    case 'duration':
+      sorted.sort((a, b) => a.durationMinutes - b.durationMinutes)
+      break
+    case 'departure':
+      sorted.sort((a, b) => a.departure.time.localeCompare(b.departure.time))
+      break
+    case 'arrival':
+      sorted.sort((a, b) => a.arrival.time.localeCompare(b.arrival.time))
+      break
+  }
+
+  return sorted
 }
 
 export function deriveFilterOptions(

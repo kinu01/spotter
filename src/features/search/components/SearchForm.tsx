@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AirportPicker } from './AirportPicker'
 import { DateInput } from './DateInput'
 import { Button } from '@/shared/components/Button'
+import { SwapIcon } from '@/shared/components/Icons'
 import { getTodayDate, addDays } from '@/shared/utils/format'
 import type { FlightSearchParams } from '@/shared/types/api.types'
 
@@ -98,9 +99,7 @@ export function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             aria-label="Swap origin and destination"
           >
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
+            <SwapIcon className="text-gray-400" />
           </button>
         </div>
 

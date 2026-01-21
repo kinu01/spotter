@@ -1,35 +1,22 @@
 import { useMemo } from 'react'
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Cell,
 } from 'recharts'
 import type { Flight } from '@/shared/types/api.types'
-import { aggregateByAirline, type ChartDataPoint } from '../utils/chartData'
-import { formatPrice } from '@/shared/utils/format'
+import { getPriceDistribution, type PriceDistribution } from '../utils/chartData'
 
-interface PriceChartProps {
+interface PriceDistributionChartProps {
   flights: Flight[]
 }
 
-const COLORS = [
-  '#0EA5E9', // sky-500
-  '#06B6D4', // cyan-500
-  '#14B8A6', // teal-500
-  '#0284C7', // sky-600
-  '#0891B2', // cyan-600
-  '#0D9488', // teal-600
-  '#0369A1', // sky-700
-  '#0E7490', // cyan-700
-]
-
 interface CustomTooltipProps {
   active?: boolean
-  payload?: { payload: ChartDataPoint }[]
+  payload?: { payload: PriceDistribution }[]
 }
 
 function CustomTooltip({ active, payload }: CustomTooltipProps) {
@@ -39,19 +26,16 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
-      <p className="font-medium text-gray-900">{data.airline}</p>
+      <p className="font-medium text-gray-900">{data.range}</p>
       <p className="text-sm text-gray-600">
-        From <span className="font-medium">{formatPrice(data.minPrice)}</span>
-      </p>
-      <p className="text-sm text-gray-500">
         {data.count} {data.count === 1 ? 'flight' : 'flights'}
       </p>
     </div>
   )
 }
 
-export function PriceChart({ flights }: PriceChartProps) {
-  const chartData = useMemo(() => aggregateByAirline(flights), [flights])
+export function PriceDistributionChart({ flights }: PriceDistributionChartProps) {
+  const chartData = useMemo(() => getPriceDistribution(flights), [flights])
 
   if (flights.length === 0 || chartData.length === 0) {
     return null
@@ -60,38 +44,45 @@ export function PriceChart({ flights }: PriceChartProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
       <h3 className="text-sm font-medium text-gray-900 mb-4">
-        Price by Airline
+        Price Distribution
       </h3>
-      <div className="h-48">
+      <div className="h-40">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
+          <AreaChart
             data={chartData}
             margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
           >
+            <defs>
+              <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#0EA5E9" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <XAxis
-              dataKey="airline"
-              tick={{ fontSize: 11, fill: '#6B7280' }}
+              dataKey="range"
+              tick={{ fontSize: 10, fill: '#6B7280' }}
               tickLine={false}
               axisLine={false}
               interval={0}
               angle={-20}
               textAnchor="end"
-              height={50}
+              height={45}
             />
             <YAxis
               tick={{ fontSize: 11, fill: '#6B7280' }}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `$${value}`}
-              width={50}
+              width={30}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: '#F3F4F6' }} />
-            <Bar dataKey="minPrice" radius={[4, 4, 0, 0]}>
-              {chartData.map((_, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Bar>
-          </BarChart>
+            <Area
+              type="monotone"
+              dataKey="count"
+              stroke="#0EA5E9"
+              strokeWidth={2}
+              fill="url(#priceGradient)"
+            />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import type { FilterState, FilterOptions } from '../filter.types'
+import { SortSelect } from './SortSelect'
 import { StopsFilter } from './StopsFilter'
 import { PriceSlider } from './PriceSlider'
 import { AirlineFilter } from './AirlineFilter'
@@ -34,11 +35,18 @@ export function FilterPanel({
       </div>
 
       <div className="space-y-6">
-        <StopsFilter
-          options={options.stopsOptions}
-          selected={filters.stops}
-          onChange={(stops) => onChange('stops', stops)}
+        <SortSelect
+          value={filters.sortBy}
+          onChange={(sortBy) => onChange('sortBy', sortBy)}
         />
+
+        <div className="border-t border-gray-200 pt-6">
+          <StopsFilter
+            options={options.stopsOptions}
+            selected={filters.stops}
+            onChange={(stops) => onChange('stops', stops)}
+          />
+        </div>
 
         <div className="border-t border-gray-200 pt-6">
           <PriceSlider
