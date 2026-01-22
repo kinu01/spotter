@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { SearchForm, useFlightSearch, SearchHistory, useSearchHistory } from '@/features/search'
 import type { FlightSearchParams } from '@/shared/types/api.types'
 import { FlightList, FlightSummary } from '@/features/flights'
@@ -21,12 +21,20 @@ export function SearchPage() {
 
   const isMobile = useIsMobile()
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false)
+  const lastSearchParams = useRef<FlightSearchParams | null>(null)
 
   const showFilters = hasSearched && flights.length > 0
 
   function handleSearch(params: FlightSearchParams) {
+    lastSearchParams.current = params
     addSearch(params)
     search(params)
+  }
+
+  function handleRetry() {
+    if (lastSearchParams.current) {
+      search(lastSearchParams.current)
+    }
   }
 
   return (
@@ -120,7 +128,7 @@ export function SearchPage() {
               isLoading={isLoading}
               error={error}
               hasSearched={hasSearched}
-              onRetry={() => {}}
+              onRetry={handleRetry}
             />
           </div>
         </div>
