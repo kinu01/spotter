@@ -66,18 +66,42 @@ A modern flight search application built with React, TypeScript, and the Amadeus
 
 ```
 src/
-├── data/              # Static data (airports)
-├── features/          # Feature modules
-│   ├── charts/        # Price visualization
-│   ├── filters/       # Flight filtering & sorting
-│   ├── flights/       # Flight display components
-│   └── search/        # Search form & API integration
-├── pages/             # Page components
-└── shared/            # Shared utilities & components
-    ├── components/    # Reusable UI (Button, Layout, Icons)
-    ├── hooks/         # Custom React hooks
-    ├── types/         # TypeScript types
-    └── utils/         # Helper functions
+├── main.tsx                    # Application entry point
+├── App.tsx                     # Root component with routing
+├── index.css                   # Global styles (Tailwind)
+│
+├── features/                   # Feature-based modules (self-contained)
+│   │
+│   ├── search/                 # Search feature
+│   │   ├── components/         # SearchForm, AirportPicker, DateInput, SearchHistory
+│   │   ├── hooks/              # useFlightSearch, useSearchHistory
+│   │   ├── services/           # API calls (flightService)
+│   │   └── index.ts            # Public exports
+│   │
+│   ├── flights/                # Flight results feature
+│   │   ├── components/         # FlightCard, FlightList, FlightSummary
+│   │   ├── utils/              # Data transformation
+│   │   └── index.ts
+│   │
+│   ├── filters/                # Filtering & sorting feature
+│   │   ├── components/         # FilterPanel, StopsFilter, PriceSlider, QuickFilterTabs
+│   │   ├── hooks/              # useFlightFilters
+│   │   ├── utils/              # Filter logic
+│   │   └── index.ts
+│   │
+│   └── charts/                 # Data visualization feature
+│       ├── components/         # PriceChart, PriceDistributionChart
+│       ├── utils/              # Chart data aggregation
+│       └── index.ts
+│
+├── pages/                      # Page components (route entry points)
+│   └── SearchPage.tsx          # Main search page
+│
+└── shared/                     # Shared across all features
+    ├── components/             # Reusable UI (Button, Layout, Icons, Skeleton)
+    ├── hooks/                  # Shared hooks (useBreakpoint)
+    ├── types/                  # TypeScript interfaces
+    └── utils/                  # Helper functions (format, etc.)
 ```
 
 ## Scripts
