@@ -8,14 +8,18 @@ A modern flight search application built with React, TypeScript, and the Amadeus
 
 ## Features
 
+### Core
 - **Flight Search** - Search flights by origin, destination, dates, and passengers
 - **Real-time Results** - Powered by Amadeus Flight Offers Search API
 - **Smart Filtering** - Filter by stops, price range, and airlines
-- **Sorting** - Sort by price, duration, departure, or arrival time
-- **Quick Filters** - One-click filters for Cheapest, Fastest, and Best flights
-- **Price Charts** - Visualize prices by airline and price distribution
-- **Search History** - Recent searches saved locally for quick access
+- **Price Chart** - Visualize prices by airline
 - **Responsive Design** - Optimized for desktop and mobile devices
+
+### Extra
+- **Sorting** - Sort by price, duration, departure, or arrival time
+- **Quick Filters** - One-click tabs for Cheapest, Fastest, and Best flights
+- **Price Distribution Chart** - Area chart showing flight count by price range
+- **Search History** - Recent searches saved in localStorage for quick access
 
 ## Tech Stack
 
