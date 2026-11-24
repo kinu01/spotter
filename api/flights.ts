@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { buildOfferRequest, toAmadeusShape, type DuffelOffer, type SearchParams } from './_duffel'
+import { buildOfferRequest, toAmadeusShape, type DuffelOffer, type SearchParams } from './_duffel.js'
 
 type FlightSearchParams = SearchParams
 
