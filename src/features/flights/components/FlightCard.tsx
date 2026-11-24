@@ -78,9 +78,11 @@ export function FlightCard({ flight }: FlightCardProps) {
             <p className="text-xl font-semibold text-gray-900">
               {formatPrice(flight.price, flight.currency)}
             </p>
-            <p className="text-sm text-gray-500">
-              {flight.seatsAvailable} {flight.seatsAvailable === 1 ? 'seat' : 'seats'} left
-            </p>
+            {flight.seatsAvailable > 0 && (
+              <p className="text-sm text-gray-500">
+                {flight.seatsAvailable} {flight.seatsAvailable === 1 ? 'seat' : 'seats'} left
+              </p>
+            )}
           </div>
 
           {/* Expand Indicator */}

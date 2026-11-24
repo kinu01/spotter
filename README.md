@@ -1,6 +1,6 @@
 # Spotter - Flight Search Engine
 
-A modern flight search application built with React, TypeScript, and the Amadeus API.
+A modern flight search application built with React, TypeScript, and the Duffel flights API.
 
 **Live Demo:** [https://spotter-wine.vercel.app](https://spotter-wine.vercel.app)
 
@@ -10,7 +10,7 @@ A modern flight search application built with React, TypeScript, and the Amadeus
 
 ### Core
 - **Flight Search** - Search flights by origin, destination, dates, and passengers
-- **Real-time Results** - Powered by Amadeus Flight Offers Search API
+- **Real-time Results** - Powered by Duffel flight offers
 - **Smart Filtering** - Filter by stops, price range, and airlines
 - **Price Chart** - Visualize prices by airline
 - **Responsive Design** - Optimized for desktop and mobile devices
@@ -26,7 +26,7 @@ A modern flight search application built with React, TypeScript, and the Amadeus
 - **Frontend:** React 18, TypeScript, Vite
 - **Styling:** Tailwind CSS
 - **Charts:** Recharts
-- **API:** Amadeus Flight Offers Search API
+- **API:** Duffel flight offers (test mode)
 - **Deployment:** Vercel
 
 ## Getting Started
@@ -34,7 +34,7 @@ A modern flight search application built with React, TypeScript, and the Amadeus
 ### Prerequisites
 
 - Node.js 18+
-- Amadeus API credentials ([Sign up here](https://developers.amadeus.com))
+- A Duffel access token ([Sign up here](https://app.duffel.com/join)); a test token is free
 
 ### Installation
 
@@ -53,11 +53,10 @@ A modern flight search application built with React, TypeScript, and the Amadeus
 
    For local development, create a `.env` file:
    ```env
-   AMADEUS_CLIENT_ID=your_client_id
-   AMADEUS_CLIENT_SECRET=your_client_secret
+   DUFFEL_ACCESS_TOKEN=duffel_test_your_token
    ```
 
-   For Vercel deployment, add these as environment variables in your project settings.
+   For Vercel deployment, add it as an environment variable in your project settings.
 
 4. Start the development server
    ```bash
@@ -121,7 +120,9 @@ src/
 
 ## API
 
-The app uses [Amadeus Flight Offers Search API](https://developers.amadeus.com/self-service/category/flights/api-doc/flight-offers-search) to fetch real flight data. The API is called through a serverless function (`/api/flights.ts`) to keep credentials secure.
+The app fetches flight offers from the [Duffel API](https://duffel.com/docs/api/v2/offer-requests) through a serverless function (`/api/flights.ts`), so the token never reaches the browser.
+
+Spotter was first built on the Amadeus Self-Service API. Amadeus shut that service down in July 2026, so the search stopped working. I moved the server to Duffel and wrote a small converter (`api/_duffel.ts`, with tests) that turns Duffel offers into the shape the screens already used, so the screens, filters and charts did not change.
 
 ## License
 
